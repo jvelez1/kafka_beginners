@@ -1,21 +1,8 @@
 # KafkaBeginner
 
-**TODO: Add description**
+**Implementation of the course:**
+**[Apache Kafka Series - Learn Apache Kafka for Beginners v3](https://www.udemy.com/course/apache-kafka/) using elixir**
 
-## Installation
+Prerequisites: 
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `kafka_beginners` to your list of dependencies in `mix.exs`:
-
-```elixir
-def deps do
-  [
-    {:kafka_beginners, "~> 0.1.0"}
-  ]
-end
-```
-
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at <https://hexdocs.pm/kafka_beginners>.
-
+- Kafka setup: I went with the docker option following the [conduktor guide](https://www.conduktor.io/kafka/how-to-start-kafka-using-docker/)
