@@ -1,5 +1,4 @@
 defmodule Wikimedia.Producer do
-  alias KafkaEx.Protocol.Produce.{Message, Request}
   require Logger
 
   @doc """
@@ -10,8 +9,8 @@ defmodule Wikimedia.Producer do
   def send(topic, message) do
     Logger.info("sending message: #{message} to: #{topic}")
 
-    case KafkaEx.produce(topic, 0, message) do
-      :ok -> Logger.info("message sent!")
+    case KafkaEx.produce(topic, 0, message, [required_acks: -1]) do
+      {:ok, id} -> Logger.info("message sent: pid: #{id}")
       error -> Logger.error("error: #{error}")
     end
   end
