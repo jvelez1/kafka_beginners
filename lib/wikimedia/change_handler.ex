@@ -1,6 +1,8 @@
 defmodule Wikimedia.ChangeHandler do
   use GenServer, shutdown: 1000
 
+  alias Wikimedia.Producer
+
   @moduledoc """
   This module reads events from https://stream.wikimedia.org/v2/stream/recentchange
   and publish messages to kafka
@@ -21,12 +23,10 @@ defmodule Wikimedia.ChangeHandler do
     {:ok, nil}
   end
 
+  @topic "wikimedia.recent_change"
   def handle_info(%HTTPoison.AsyncChunk{chunk: chunk}, _state) do
     case Regex.run(~r/data: (.+?)\n/, chunk) do
-      [_, data] ->
-        json = Jason.decode!(data)
-        # todo send messages to kafka
-        IO.inspect(json)
+      [_, data] -> Producer.send(@topic, data)
       _ -> nil
     end
 
