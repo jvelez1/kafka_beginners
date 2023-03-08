@@ -1,0 +1,23 @@
+{
+  "type": "record",
+  "name": "Wikimedia",
+  "namespace": "body",
+  "fields": [
+    {
+      "name": "schema",
+      "type": "string"
+    },
+    {
+      "name": "uri",
+      "type": "string"
+    },
+    {
+      "name": "request_id",
+      "type": "string"
+    },
+    {
+      "name": "id",
+      "type": "string"
+    }
+  ]
+}
