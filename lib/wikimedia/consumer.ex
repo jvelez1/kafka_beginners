@@ -11,11 +11,23 @@ defmodule Wikimedia.Consumer do
     commit_interval: 5000, commit_threshold: 100
     )
   """
+  use GenServer, restart: :transient
   use KafkaEx.GenConsumer
 
   alias KafkaEx.Protocol.Fetch.Message
 
   require Logger
+
+  def start_link(_args \\ []) do
+    KafkaEx.GenConsumer.start_link(
+      __MODULE__,
+      "wikimedia_group",
+      "wikimedia.recent_change",
+      0,
+      auto_offset_reset: :latest,
+      commit_interval: 5000, commit_threshold: 100
+    )
+  end
 
   def handle_message_set(message_set, state) do
     for %Message{value: message} <- message_set do

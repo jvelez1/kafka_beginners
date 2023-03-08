@@ -1,5 +1,5 @@
 defmodule Wikimedia.ChangeHandler do
-  use GenServer, shutdown: 1000
+  use GenServer, restart: :transient
 
   alias Wikimedia.Producer
 
@@ -14,12 +14,12 @@ defmodule Wikimedia.ChangeHandler do
   send(pid, :terminate)
   """
 
-  def start(url) do
-    GenServer.start_link(__MODULE__, url: url)
+  def start_link(_args \\ []) do
+    GenServer.start_link(__MODULE__, [], name: __MODULE__)
   end
 
   @url "https://stream.wikimedia.org/v2/stream/recentchange"
-  def init(_args) do
+  def init(_args \\ []) do
     IO.puts "Connecting to stream..."
     HTTPoison.get!(@url, [], [recv_timeout: :infinity, stream_to: self()])
     {:ok, nil}
