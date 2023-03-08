@@ -3,6 +3,8 @@ defmodule Wikimedia.ChangeHandler do
 
   alias Wikimedia.Producer
 
+  require Logger
+
   @moduledoc """
   This module reads events from https://stream.wikimedia.org/v2/stream/recentchange
   and publish messages to kafka
@@ -30,7 +32,7 @@ defmodule Wikimedia.ChangeHandler do
         data
         |> Jason.decode!()
         |> parse_data()
-        |> Jason.encode!()
+        |> encode_data()
         |> then(fn message -> Producer.send(@topic, message) end)
       _ -> nil
     end
@@ -50,5 +52,16 @@ defmodule Wikimedia.ChangeHandler do
 
   defp parse_data(%{"$schema" => schema, "meta" => %{"uri" => uri, "request_id" => request_id,"id" => id} } = _data) do
     %{schema: schema, uri: uri, request_id: request_id, id: id}
+  end
+
+  #
+  # Previosly you should start avro =>  {:ok, pid} = Avrora.start_link()
+  # register_schema_by_name => {:ok, schema} = Avrora.Utils.Registrar.register_schema_by_name("body.Wikimedia", force: true)
+  #
+  defp encode_data(parsed_data) do
+    case Avrora.encode(parsed_data, schema_name: "body.Wikimedia") do
+      {:ok, encoded} -> encoded
+      _ -> Logger.error("ups!")
+    end
   end
 end

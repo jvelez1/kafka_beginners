@@ -1,5 +1,9 @@
 import Config
 
+
+
+# {:ok, pid} = Avrora.start_link()
+
 config :avrora,
   # otp_app: :my_application, # optional, if you want to use it as a root folder for `schemas_path`
   registry_url: "http://localhost:8081",
