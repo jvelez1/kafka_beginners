@@ -19,11 +19,22 @@ defmodule Wikimedia.Consumer do
 
   def handle_message_set(message_set, state) do
     for %Message{value: message} <- message_set do
-      payload = Jason.decode!(message)
-      %{"id" => id} = payload
-      Logger.debug("proccessed #{id} #{DateTime.utc_now}")
+      message
+      |> decode()
+      |> then(fn message -> Logger.debug("proccessed #{message["id"]} #{DateTime.utc_now}") end)
     end
 
     {:async_commit, state}
+  end
+
+  #
+  # Previosly you should start avro =>  {:ok, pid} = Avrora.start_link()
+  # register_schema_by_name => {:ok, schema} = Avrora.Utils.Registrar.register_schema_by_name("body.Wikimedia", force: true)
+  #
+  defp decode(message) do
+    case Avrora.decode(message, schema_name: "body.Wikimedia") do
+      {:ok, decoded} -> decoded
+      _ -> Logger.error("ups!!")
+    end
   end
 end
