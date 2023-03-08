@@ -2,7 +2,7 @@ defmodule Wikimedia do
   @moduledoc false
   use Application
 
-  def start(_type, _args) do
+  def start(_type \\ [], _args \\ []) do
     IO.inspect("Starting supervisor...")
 
     children = [
