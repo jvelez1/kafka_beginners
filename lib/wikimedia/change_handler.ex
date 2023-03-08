@@ -26,7 +26,12 @@ defmodule Wikimedia.ChangeHandler do
   @topic "wikimedia.recent_change"
   def handle_info(%HTTPoison.AsyncChunk{chunk: chunk}, _state) do
     case Regex.run(~r/data: (.+?)\n/, chunk) do
-      [_, data] -> Producer.send(@topic, data)
+      [_, data] ->
+        data
+        |> Jason.decode!()
+        |> parse_data()
+        |> Jason.encode!()
+        |> then(fn message -> Producer.send(@topic, message) end)
       _ -> nil
     end
 
@@ -41,5 +46,9 @@ defmodule Wikimedia.ChangeHandler do
   def handle_info(%HTTPoison.AsyncHeaders{} = headers, _state) do
     IO.puts "Connection headers: #{inspect headers}"
     {:noreply, nil}
+  end
+
+  defp parse_data(%{"$schema" => schema, "meta" => %{"uri" => uri, "request_id" => request_id,"id" => id} } = _data) do
+    %{schema: schema, uri: uri, request_id: request_id, id: id}
   end
 end
